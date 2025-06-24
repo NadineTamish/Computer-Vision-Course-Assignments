@@ -159,7 +159,36 @@
     \end{itemize}
 \end{itemize}
 
-\subsection{{DETR}}
+\subsection{DETR ( [DE]tection [TR]ansformer)}
+\begin{itemize}
+    \item \textbf{Backbone:}
+        \begin{itemize}
+            \item \textbf{ResNet-50:} Used as a feature extractor. It outputs a grid of image features that are passed into the transformer.
+            \item \textbf{Positional Encoding:} Since transformers are permutation-invariant, positional encodings (sine and cosine based) are added to the backbone features to retain spatial information.
+        \end{itemize}
+        
+    \item \textbf{Transformer Encoder-Decoder:}
+        \begin{itemize}
+            \item \textbf{Encoder:} A standard transformer encoder processes the flattened feature map. It consists of multi-head self-attention layers and feed-forward networks.
+            \item \textbf{Decoder:} Uses a fixed number of learned object queries. Each query attends to the encoder output and attempts to predict an object.
+            \item \textbf{Object Queries:} Learnable embeddings that allow the model to detect a fixed number of objects in a single forward pass.
+        \end{itemize}
+        
+    \item \textbf{Prediction Head:}
+        \begin{itemize}
+            \item Consists of a shared feed-forward network applied to each decoder output.
+            \item Each query outputs a bounding box and class label.
+            \item DETR performs a bipartite matching (Hungarian algorithm) between predicted boxes and ground truth, enabling end-to-end optimization without anchor boxes or NMS.
+        \end{itemize}
+
+    \item \textbf{Inference and Evaluation:}
+        \begin{itemize}
+            \item Pretrained DETR (ResNet-50) from Hugging Face was used.
+            \item Inference was performed on the Pascal VOC 2007 test set.
+            \item Predictions were post-processed using the built-in DETR image processor with a confidence threshold of 0.7.
+            \item Results were converted to COCO format and evaluated using \texttt{pycocotools} for standard object detection metrics (AP, AR).
+        \end{itemize}
+\end{itemize}
 
 \section{\textbf Evaluation metrics}
 \begin{itemize}
@@ -230,6 +259,39 @@
         avg\_IOU        & 0.511   \\
         Precision      & 17.77\\
         Recall         & 93.52 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{DETR}
+
+\subsubsection{COCO Dataset}
+\begin{table}[H]
+    \centering
+    \caption{DETR Performance on COCO Dataset}
+    \begin{tabular}{lccc}
+        \toprule
+        \textbf{IoU Threshold} & \textbf{mAP} & \textbf{Precision} & \textbf{Recall} \\
+        \midrule
+        0.5:0.95 & 36.5 & 39.0 & 42.1 \\
+        0.5      & 52.3 & 46.5 & 49.7 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsubsection{Pascal VOC Dataset}
+\begin{table}[H]
+    \centering
+    \caption{DETR Performance on Pascal VOC Dataset}
+    \begin{tabular}{lc}
+        \toprule
+        \textbf{Metric} & \textbf{Value} \\
+        \midrule
+        mAP@0.5        & 55.9  \\
+        mAP@0.5:0.95   & 41.3  \\
+        avg\_IOU       & 62.6    \\
+        Precision      & 55.9    \\
+        Recall         & 47.0  \\
         \bottomrule
     \end{tabular}
 \end{table}
