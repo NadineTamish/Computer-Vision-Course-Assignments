@@ -1,0 +1,171 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{geometry}
+\usepackage{lipsum}  
+\usepackage{cmbright}
+\usepackage{titlesec}
+\usepackage{tabularx} 
+
+% Optional: Set how deep TOC and numbering should go
+\setcounter{tocdepth}{3}
+\setcounter{secnumdepth}{3}
+
+\title{\textbf{Object Detection Models \\ YOLOv8, Faster R-CNN, DETR}}
+
+
+\makeatletter
+\def\@maketitle{%
+  \newpage
+  \null
+  \vskip 1em%
+  \begin{center}%
+  \let \footnote \thanks
+    {\LARGE \@title \par}%
+    \vskip 1em%
+  \end{center}%
+  \par
+  \vskip 1em}
+\makeatother
+
+\begin{document}
+
+\maketitle
+
+\vspace{12cm}
+
+\begin{table}[H]
+    \centering
+    \renewcommand{\arraystretch}{1.5} % Adjust row height (1.0 is default)
+    \setlength{\tabcolsep}{20pt}      % Adjust column width (default is 6pt)
+    \begin{tabularx}{0.8\textwidth}{|X|c|}
+        \hline
+        \textbf{Name} & \textbf{ID} \\
+        \hline
+        Hour Mohamed   & 8119 \\
+        Nadine Mohamed Tamish & 8092 \\
+        Seif Maged     & 8387 \\
+        \hline
+    \end{tabularx}
+\end{table}
+
+\newpage
+\tableofcontents
+\newpage
+
+
+
+\section{Architectures}
+\subsection{YOLOV8}
+\begin{itemize}
+\item \textbf {Backbone: } 
+    \begin{itemize}
+        \item \textbf {CBS Blocks (Conv-BN-SiLU):} Basic building block: Convolution → BatchNorm → SiLU (Swish) activation.
+        \item \textbf {C2f Modules:} 
+            \begin{itemize}
+                \item Similar to CSP (Cross Stage Partial) modules, but more efficient. \item Split input, process one part with bottlenecks, then fuse back. 
+            \end{itemize}
+                
+        \item \textbf {SPPF (Spatial Pyramid Pooling – Fast):}
+            \begin{itemize}
+                \item Helps to capture multi-scale features with minimal computation.
+                \item Replaces traditional SPP with a faster variant.
+            \end{itemize}
+        \item \textbf {Downsampling via Strided Convolutions or MaxPool:}
+            \begin{itemize}
+                \item Reduces spatial resolution while increasing channel depth.
+            \end{itemize}
+    \end{itemize}
+\item \textbf {Neck (feature extractor):} 
+             Merges feature maps from different stages of the backbone to capture information at various scales.
+
+\item \textbf{Head:} Responsible for making predictions. 
+\end{itemize}
+\subsection{FASTER-RCNN}
+\subsection{{DETR}}
+
+\section{\textbf Evaluation metrics}
+\begin{itemize}
+    \item \textbf {IoU:} measures the overlap between predicted and ground truth bounding boxes
+    \item \textbf{mAP:} measures how well the model detects and classifies objects.
+\end{itemize}
+
+\section{Results}
+
+\subsection{YOLO}
+
+\subsubsection{COCO Dataset}
+\begin{table}[H]
+    \centering
+    \caption{YOLO Performance on COCO Dataset}
+    \begin{tabular}{lccc}
+        \toprule
+        \textbf{IoU Threshold} & \textbf{mAP} & \textbf{Precision} & \textbf{Recall} \\
+        \midrule
+        0.5:0.95 & 37.2 & 37.4 & 32.0 \\
+        0.5      & 52.1 & 52.6 & 81.1 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsubsection{Pascal VOC Dataset}
+\begin{table}[H]
+    \centering
+    \caption{YOLO Performance on Pascal VOC Dataset}
+    \begin{tabular}{lc}
+        \toprule
+        \textbf{Metric} & \textbf{Value} \\
+        \midrule
+        mAP@0.5        & 8.7  \\
+        mAP@0.5:0.95   & 6.7  \\
+        Precision      & 8.9  \\
+        Recall         & 7.5  \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Faster R-CNN}
+
+\subsubsection{COCO Dataset}
+\begin{table}[H]
+    \centering
+    \caption{Faster R-CNN Performance on COCO Dataset}
+    \begin{tabular}{lccc}
+        \toprule
+        \textbf{IoU Threshold} & \textbf{mAP} & \textbf{Precision} & \textbf{Recall} \\
+        \midrule
+        0.5:0.95 & 34.44 & 37.8  & 42.23 \\
+        0.5      & 53.83 & 46.19 & 81.1 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsubsection{Pascal VOC Dataset}
+\begin{table}[H]
+    \centering
+    \caption{Faster R-CNN Performance on Pascal VOC Dataset}
+    \begin{tabular}{lc}
+        \toprule
+        \textbf{Metric} & \textbf{Value} \\
+        \midrule
+        mAP@0.5        & 73.35  \\
+        mAP@0.5:0.95   & 46.387  \\
+        avg\_IOU        & 0.511   \\
+        Precision      & 17.77\\
+        Recall         & 93.52 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\end{document}
