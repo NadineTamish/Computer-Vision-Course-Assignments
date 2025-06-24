@@ -92,7 +92,73 @@
 
 \item \textbf{Head:} Responsible for making predictions. 
 \end{itemize}
-\subsection{FASTER-RCNN}
+\subsection{Faster R-CNN}
+\begin{itemize}
+    \item \textbf{Backbone (Feature Extractor):}
+    \begin{itemize}
+        \item Typically a pre-trained CNN like ResNet-50 or ResNet-101.
+        \item Extracts convolutional feature maps from the input image.
+        \item Often includes Feature Pyramid Networks (FPN) to capture multi-scale features.
+    \end{itemize}
+
+    \item \textbf{Region Proposal Network (RPN):}
+    \begin{itemize}
+        \item A shallow network that slides over the feature map produced by the backbone.
+        \item For each location, it predicts:
+        \begin{itemize}
+            \item \textbf{Objectness score:} whether the region contains an object.
+            \item \textbf{Bounding box offsets:} refinements to default anchor boxes.
+        \end{itemize}
+        \item Outputs a set of region proposals (ROIs) with high objectness scores.
+    \end{itemize}
+
+    \item \textbf{Anchor Boxes:}
+    \begin{itemize}
+        \item Predefined boxes of different scales and aspect ratios used by the RPN.
+        \item Anchor boxes are refined using regression offsets predicted by the RPN.
+    \end{itemize}
+
+    \item \textbf{ROI Align (Region of Interest Alignment):}
+    \begin{itemize}
+        \item Takes variable-sized region proposals and extracts fixed-size (e.g., 7×7) feature maps from the backbone feature map.
+        \item ROI Align improves upon ROI Pooling by preserving spatial alignment (no rounding).
+    \end{itemize}
+
+    \item \textbf{Head (Two Fully Connected Layers):}
+    \begin{itemize}
+        \item Processes the aligned ROIs with two fully connected (FC) layers.
+        \item Outputs two branches:
+        \begin{itemize}
+            \item \textbf{Classification Branch:}
+            \begin{itemize}
+                \item Uses a \textbf{Softmax} function.
+                \item Outputs class probabilities (including background).
+            \end{itemize}
+            \item \textbf{Bounding Box Regression Branch:}
+            \begin{itemize}
+                \item Outputs four coordinates for each class: \texttt{[tx, ty, tw, th]}.
+                \item These are used to refine the final bounding box locations.
+            \end{itemize}
+        \end{itemize}
+    \end{itemize}
+
+    \item \textbf{Post-processing:}
+    \begin{itemize}
+        \item Applies \textbf{Non-Maximum Suppression (NMS)} to remove redundant overlapping boxes.
+        \item Final output is a set of object detections with class labels, confidence scores, and bounding boxes.
+    \end{itemize}
+
+    \item \textbf{Training Strategy:}
+    \begin{itemize}
+        \item Multi-task loss = classification loss (Softmax Cross-Entropy) + bounding box regression loss (Smooth L1).
+        \item Trained end-to-end in a two-stage pipeline:
+        \begin{enumerate}
+            \item Train RPN to generate high-quality proposals.
+            \item Train classification and regression heads on the proposed regions.
+        \end{enumerate}
+    \end{itemize}
+\end{itemize}
+
 \subsection{{DETR}}
 
 \section{\textbf Evaluation metrics}
@@ -146,7 +212,7 @@
         \textbf{IoU Threshold} & \textbf{mAP} & \textbf{Precision} & \textbf{Recall} \\
         \midrule
         0.5:0.95 & 34.44 & 37.8  & 42.23 \\
-        0.5      & 53.83 & 46.19 & 81.1 \\
+        0.5      & 53.83 & 46.19 & 52.13 \\
         \bottomrule
     \end{tabular}
 \end{table}
