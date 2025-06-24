@@ -17,6 +17,10 @@
 \usepackage{cmbright}
 \usepackage{titlesec}
 \usepackage{tabularx} 
+\titlespacing*{\section}{0pt}{1ex plus 0.5ex minus .2ex}{1ex plus 0.3ex}
+\titlespacing*{\subsection}{0pt}{0.8ex plus 0.4ex minus .2ex}{0.8ex plus 0.3ex}
+\titlespacing*{\subsubsection}{0pt}{0.6ex plus 0.3ex minus .2ex}{0.6ex plus 0.2ex}
+
 
 % Optional: Set how deep TOC and numbering should go
 \setcounter{tocdepth}{3}
@@ -64,7 +68,38 @@
 \tableofcontents
 \newpage
 
+\section{Introduction}
 
+Object detection is a core problem in computer vision that focuses on identifying and locating objects within an image. It plays a vital role in many real-world applications such as autonomous driving, surveillance, medical imaging, and robotics.
+Over time, various model architectures have been developed to improve the speed and accuracy of detection. These models are typically grouped into three main categories:
+\begin{itemize}
+    \item \textbf{One-stage detectors}, such as YOLOv8, which perform detection in a single step and are known for their real-time performance.
+    \item \textbf{Two-stage detectors}, such as Faster R-CNN, which first propose object regions and then refine the results—typically achieving higher accuracy.
+    \item \textbf{Transformer-based detectors}, like DETR, which introduce attention mechanisms to model global relationships in the image and simplify the detection pipeline.
+\end{itemize}
+
+This report presents a comparative analysis of these three representative models, focusing on their internal architectures, detection capabilities, and performance on benchmark datasets.
+\section{Datasets}
+
+\subsection{COCO Dataset}
+ \textbf{(COCO)} dataset is a widely adopted benchmark for assessing object detection, instance segmentation, and image captioning algorithms. In our study, we utilize the 2017 edition, which comprises:
+\begin{itemize}
+    \item \textbf{Training images:} 118,287
+    \item \textbf{Validation images:} 5,000
+    \item \textbf{Evaluated categories:} 80 object classes
+\end{itemize}
+
+\textit{Note:} While COCO annotations list 91 classes in total, only 80 of them are officially evaluated. The remaining 11 classes are included in the category index but lack labeled instances within the main dataset splits.
+
+\subsection{Pascal VOC 2007 Dataset}
+The \textbf{Pascal Visual Object Classes (VOC) 2007} dataset is another key benchmark commonly used to evaluate the performance of object detection models. In this project, we rely on:
+\begin{itemize}
+    \item \textbf{Trainval set:} 5,011 annotated images
+    \item \textbf{Test set:} 4,952 annotated images
+    \item \textbf{Categories:} 20 distinct object classes
+\end{itemize}
+
+VOC 2007 offers a practical and compact dataset with varied object appearances, occlusions, and real-world imaging conditions. Its size and structure make it ideal for model prototyping and performance comparison across different architectures.
 
 \section{Architectures}
 \subsection{YOLOV8}
@@ -190,11 +225,31 @@
         \end{itemize}
 \end{itemize}
 
-\section{\textbf Evaluation metrics}
+\vspace{-0.9}
+\section{\textbf{Evaluation Metrics}}
+
+\subsection{Intersection over Union (IoU)}
+Intersection over Union (IoU) quantifies the degree of overlap between a predicted bounding box and the corresponding ground truth box. It is computed as:
+
+\begin{equation}
+\text{IoU} = \frac{\text{Area of Overlap}}{\text{Area of Union}}
+\end{equation}
+
+A higher IoU indicates better localization. Detection results are considered correct when their IoU with the ground truth exceeds a predefined threshold.
+
+\subsection{Mean Average Precision (mAP)}
+Mean Average Precision (mAP) is a standard metric used to evaluate the accuracy of object detection models. It combines both localization and classification performance. The mAP is computed as:
+
+\begin{equation}
+\text{mAP} = \frac{1}{N} \sum_{i=1}^{N} \text{AP}_i
+\end{equation}
+
+Here, \( N \) is the number of object categories, and \( \text{AP}_i \) is the Average Precision for the \( i \)-th class. In our experiments, we report:
 \begin{itemize}
-    \item \textbf {IoU:} measures the overlap between predicted and ground truth bounding boxes
-    \item \textbf{mAP:} measures how well the model detects and classifies objects.
+    \item \textbf{mAP@0.5:} Average Precision at a fixed IoU threshold of 0.5
+    \item \textbf{mAP@0.5:0.95:} Average of AP values computed at multiple IoU thresholds from 0.5 to 0.95 in steps of 0.05
 \end{itemize}
+
 
 \section{Results}
 
@@ -222,10 +277,11 @@
         \toprule
         \textbf{Metric} & \textbf{Value} \\
         \midrule
-        mAP@0.5        & 8.7  \\
-        mAP@0.5:0.95   & 6.7  \\
-        Precision      & 8.9  \\
-        Recall         & 7.5  \\
+        mAP@0.5        & 57.78  \\
+        mAP@0.5:0.95   & 45.67  \\
+        Precision      & 59.06  \\
+        Recall         & 62.78  \\
+
         \bottomrule
     \end{tabular}
 \end{table}
@@ -295,5 +351,56 @@
         \bottomrule
     \end{tabular}
 \end{table}
+
+\section{Model Comparison and Analysis}
+
+This section compares the performance of the three object detection models: YOLOv8, Faster R-CNN, and DETR—based on evaluation metrics computed on the COCO and Pascal VOC 2007 datasets.
+
+\subsection{Performance Summary}
+
+\subsubsection{COCO Dataset}
+
+\begin{table}[H]
+    \centering
+    \caption{Performance Comparison on COCO Dataset}
+    \begin{tabular}{lcccc}
+        \toprule
+        \textbf{Model} & \textbf{mAP@0.5} & \textbf{mAP@0.5:0.95} & \textbf{Precision} & \textbf{Recall} \\
+        \midrule
+        YOLOv8        & 52.1  & \textbf{37.2} & \textbf{52.6} & \textbf{81.1} \\
+        Faster R-CNN  & \textbf{53.83} & 34.44 & 46.19 & 52.13 \\
+        DETR          & 52.3  & 36.5  & 46.5  & 49.7 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsubsection{Pascal VOC Dataset}
+
+\begin{table}[H]
+    \centering
+    \caption{Performance Comparison on Pascal VOC 2007 Dataset}
+    \begin{tabular}{lccccc}
+        \toprule
+        \textbf{Model} & \textbf{mAP@0.5} & \textbf{mAP@0.5:0.95} & \textbf{avg\_IoU} & \textbf{Precision} & \textbf{Recall} \\
+        \midrule
+        YOLOv8        & 57.78 & 45.67 & --     & \textbf{59.06} & 62.78 \\
+        Faster R-CNN  & \textbf{73.35} & \textbf{46.39} & 51.1  & 17.77 & \textbf{93.52} \\
+        DETR          & 55.9  & 41.3  & \textbf{62.6}  & 55.9  & 47.0 \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\subsection{Observations}
+
+\begin{itemize}
+    \item \textbf{YOLOv8} achieves the best recall and precision on the COCO dataset, making it ideal for real-time applications where fast and accurate detection is critical.
+    
+    \item \textbf{Faster R-CNN} outperforms the other models on the Pascal VOC dataset in terms of mean Average Precision (mAP@0.5), indicating strong performance in smaller, structured datasets. It also achieves the highest recall, although its precision is significantly lower, suggesting more false positives.
+    
+    \item \textbf{DETR} shows superior average IoU on Pascal VOC, indicating better bounding box alignment. It eliminates the need for anchor boxes and Non-Maximum Suppression (NMS), offering an end-to-end transformer-based detection pipeline.
+\end{itemize}
+
+
+
 
 \end{document}
